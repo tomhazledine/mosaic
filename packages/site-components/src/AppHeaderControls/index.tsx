@@ -5,8 +5,10 @@ import { useRouter } from 'next/router';
 import { useContentEditor, EditorControls } from '@jpmorganchase/mosaic-content-editor-plugin';
 import { useColorMode, useStoreActions } from '@jpmorganchase/mosaic-store';
 import { useSession, signIn } from 'next-auth/react';
+import type { SearchIndex } from '@jpmorganchase/mosaic-store';
 
 import { UserProfile } from '../UserProfile';
+import { SearchInput } from '../SearchInput';
 import styles from './styles.css';
 
 type ActionMenuItem = {
@@ -17,13 +19,14 @@ type ActionMenuItem = {
 
 export type HeaderControlsProps = {
   searchEndpoint?: string;
+  searchIndex?: SearchIndex;
 };
 
 function toUpperFirst(str) {
   return `${str.substr(0, 1).toUpperCase()}${str.toLowerCase().substr(1)}`;
 }
 
-export const AppHeaderControls: React.FC<HeaderControlsProps> = () => {
+export const AppHeaderControls: React.FC<HeaderControlsProps> = ({ searchIndex }) => {
   const router = useRouter();
   const colorMode = useColorMode();
   const { setColorMode } = useStoreActions();
@@ -75,6 +78,7 @@ export const AppHeaderControls: React.FC<HeaderControlsProps> = () => {
 
   return (
     <div className={styles.root}>
+      {searchIndex && searchIndex.length > 0 && <SearchInput index={searchIndex} />}
       <EditorControls isLoggedIn={isLoggedIn} />
       <div className={styles.userInfo}>
         {isLoggedIn ? (
@@ -90,7 +94,6 @@ export const AppHeaderControls: React.FC<HeaderControlsProps> = () => {
           </Link>
         )}
       </div>
-
       <MenuButton
         CascadingMenuProps={{
           initialSource,
